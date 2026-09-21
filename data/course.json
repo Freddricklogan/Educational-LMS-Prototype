@@ -1,0 +1,88 @@
+{
+  "id": "cloud-foundations",
+  "title": "Cloud Foundations for IT Managers",
+  "description": "A five-module short course on how public cloud services are structured, secured, priced and provisioned, written for people who manage technology decisions rather than write code.",
+  "weeks": [
+    { "label": "Wk 1", "start": "2026-08-03" }, { "label": "Wk 2", "start": "2026-08-10" }, { "label": "Wk 3", "start": "2026-08-17" }, { "label": "Wk 4", "start": "2026-08-24" }, { "label": "Wk 5", "start": "2026-08-31" },
+    { "label": "Wk 6", "start": "2026-09-07" }, { "label": "Wk 7", "start": "2026-09-14" }, { "label": "Wk 8", "start": "2026-09-21" }, { "label": "Wk 9", "start": "2026-09-28" }, { "label": "Wk 10", "start": "2026-10-05" }
+  ],
+  "gradeScheme": {
+    "categories": [
+      { "id": "quizzes", "label": "Module quizzes", "weight": 0.4, "dropLowest": 1 },
+      { "id": "assignments", "label": "Assignments", "weight": 0.6 }
+    ],
+    "latePenaltyPerDay": 0.1,
+    "maxLateDays": 5
+  },
+  "modules": [
+    {
+      "id": "m1", "title": "Service models and shared responsibility",
+      "items": [
+        { "id": "m1-read", "type": "reading", "title": "IaaS, PaaS, SaaS and who is responsible for what", "minutes": 6,
+          "body": "Public cloud providers sell computing at three broad levels. Infrastructure as a Service (IaaS) rents virtual machines, block storage and networks; you install and patch the operating system and everything above it. Platform as a Service (PaaS) runs your application on a managed runtime or database; the provider patches the platform and you supply code and data. Software as a Service (SaaS) delivers a finished application over the web; you configure it and manage your users.\n\nThe shared responsibility model describes the split. The provider is always responsible for the security of the cloud: the physical facilities, the hardware, the hypervisor and the provider-managed software. The customer is responsible for security in the cloud: identities and access, data classification and encryption choices, network rules, and — for IaaS — the guest operating system and applications. The line moves upward as you move from IaaS to SaaS, but it never disappears: even in SaaS you still own who can log in, what they can see and whether multi-factor authentication is enforced.\n\nFor a manager the practical consequence is that a contract with a provider does not transfer accountability. Data-protection obligations, access reviews and backup verification remain yours, and audits will ask for evidence of them. The most common cloud incidents are not provider outages but misconfigured customer-side permissions and storage exposed to the public internet — failures on the customer's side of the line." },
+        { "id": "m1-quiz", "type": "quiz", "title": "Check: service models", "passMark": 0.75, "items": [
+          { "id": "q1", "prompt": "In Infrastructure as a Service, who patches the guest operating system?", "choices": ["The provider", "The customer", "Neither; it is immutable", "The hypervisor vendor"], "answer": 1 },
+          { "id": "q2", "prompt": "Which responsibility stays with the customer in every service model?", "choices": ["Physical security of data centres", "Hypervisor patching", "Identity and access management", "Hardware replacement"], "answer": 2 },
+          { "id": "q3", "prompt": "A managed database service where the provider patches the database engine is an example of:", "choices": ["IaaS", "PaaS", "SaaS", "Colocation"], "answer": 1 },
+          { "id": "q4", "prompt": "According to the reading, the most common cloud security incidents originate from:", "choices": ["Provider outages", "Hypervisor vulnerabilities", "Customer-side misconfiguration", "Physical intrusion"], "answer": 2 }
+        ] }
+      ]
+    },
+    {
+      "id": "m2", "title": "Regions, availability zones and resilience", "requires": "m1",
+      "items": [
+        { "id": "m2-read", "type": "reading", "title": "Geography as an architecture decision", "minutes": 7,
+          "body": "A region is a geographic area containing several availability zones. An availability zone is one or more data centres with independent power, cooling and networking, connected to the other zones in the region by low-latency links. Zones are far enough apart that a fire or flood should not take two down at once, but close enough that an application can run across them synchronously.\n\nResilience is bought in tiers. Running one server in one zone means a zone failure is an outage. Running copies across two or three zones behind a load balancer survives a zone failure, and most managed databases offer a standby in a second zone that takes over automatically. Running in two regions protects against a regional event, but it is expensive: data must be replicated over long distances, replication is usually asynchronous, and failover has to be rehearsed or it will not work.\n\nThe manager's questions are about targets. The recovery time objective (RTO) is how long the service may be down; the recovery point objective (RPO) is how much data may be lost. A multi-zone design commonly gives an RTO of minutes and an RPO near zero. A cross-region design with asynchronous replication gives an RPO of seconds to minutes and an RTO that depends entirely on how automated and how well tested the failover is. Data residency rules — where personal data may be stored — often decide the region before performance does." },
+        { "id": "m2-quiz", "type": "quiz", "title": "Check: regions and zones", "passMark": 0.75, "items": [
+          { "id": "q1", "prompt": "An availability zone is best described as:", "choices": ["A country", "One or more data centres with independent power and networking inside a region", "A content-delivery edge location", "A virtual network"], "answer": 1 },
+          { "id": "q2", "prompt": "Recovery point objective (RPO) measures:", "choices": ["Time to restore service", "Acceptable data loss, measured in time", "Number of zones used", "Cost of failover"], "answer": 1 },
+          { "id": "q3", "prompt": "Cross-region replication is usually:", "choices": ["Synchronous", "Asynchronous", "Not possible", "Free of charge"], "answer": 1 },
+          { "id": "q4", "prompt": "Which factor often decides the region before performance does?", "choices": ["Time zone", "Data residency requirements", "Provider marketing", "Zone count"], "answer": 1 }
+        ] },
+        { "id": "m2-assign", "type": "assignment", "title": "Resilience memo", "points": 20, "dueAt": "2026-08-30T23:59:00Z", "category": "assignments",
+          "brief": "In 250–400 words, recommend a zone/region design for a student records system with an RTO of one hour and an RPO of five minutes. State the trade-offs you are accepting." }
+      ]
+    },
+    {
+      "id": "m3", "title": "Identity and least privilege", "requires": "m2",
+      "items": [
+        { "id": "m3-read", "type": "reading", "title": "Identities, roles and the blast radius of a credential", "minutes": 6,
+          "body": "Every action in a cloud account is an API call made by an identity: a person, a service, or a piece of automation. Access is granted by attaching policies that list allowed actions on named resources. Least privilege means each identity is allowed only the actions its job requires, on only the resources it needs, and nothing more.\n\nThe root or owner account of a subscription can do anything and should be used almost never; it belongs in a safe with hardware multi-factor authentication. Day-to-day work should happen through named accounts federated from the organisation's identity provider, with roles assumed for specific tasks and time-limited credentials rather than long-lived keys. Long-lived access keys stored in code repositories are the single most common cause of cloud account compromise reported by providers, and an exposed key with broad permissions can run up large bills within hours.\n\nA manager should expect three controls to exist and to be evidenced: multi-factor authentication for every human account, periodic access reviews that remove unused permissions, and an audit log of API calls retained where administrators cannot alter it. The blast radius of a compromised credential is set by the permissions attached to it, so the review question is not 'who has access' but 'what could this identity do if it were stolen'." },
+        { "id": "m3-quiz", "type": "quiz", "title": "Check: identity", "passMark": 0.75, "items": [
+          { "id": "q1", "prompt": "Least privilege means an identity is allowed:", "choices": ["All actions in its own account", "Only the actions and resources its job requires", "Read-only access everywhere", "Whatever the root account allows"], "answer": 1 },
+          { "id": "q2", "prompt": "The root/owner account should be:", "choices": ["Used for daily administration", "Shared among the operations team", "Reserved, protected with hardware MFA and rarely used", "Deleted"], "answer": 2 },
+          { "id": "q3", "prompt": "The most common cause of cloud account compromise cited in the reading is:", "choices": ["Zero-day hypervisor bugs", "Long-lived access keys exposed in code", "Phishing of the provider", "DNS hijacking"], "answer": 1 },
+          { "id": "q4", "prompt": "Blast radius of a stolen credential is determined by:", "choices": ["Its age", "The permissions attached to it", "The region it was created in", "Its length"], "answer": 1 }
+        ] }
+      ]
+    },
+    {
+      "id": "m4", "title": "Pricing models and cost control", "requires": "m3",
+      "items": [
+        { "id": "m4-read", "type": "reading", "title": "On-demand, commitments and spot", "minutes": 7,
+          "body": "Cloud compute is priced three ways. On-demand charges by the second or hour with no commitment and the highest unit price. Commitments — reserved instances, savings plans, committed-use discounts — trade a one- or three-year promise for a lower rate, typically tens of percent off, and suit steady baseline load. Spot or preemptible capacity is spare provider capacity sold at a deep discount that can be reclaimed at short notice; it suits batch work and anything that can be interrupted.\n\nStorage, data transfer and managed services have their own meters. Data leaving the provider's network (egress) is charged per gigabyte and is the line item most often underestimated. Managed databases and serverless functions bill on requests, duration and provisioned capacity, so the shape of the workload matters more than its size.\n\nCost control is an operating discipline, not a purchase. Budgets with alerts, tags that attribute every resource to an owner and a purpose, regular review of idle and oversized resources, and commitments sized to measured baseline usage are the four practices that keep bills predictable. The FinOps Foundation's FOCUS specification defines a common billing-export format across providers, which makes the review comparable when more than one cloud is in use." },
+        { "id": "m4-quiz", "type": "quiz", "title": "Check: pricing", "passMark": 0.75, "items": [
+          { "id": "q1", "prompt": "Spot or preemptible capacity is suitable for:", "choices": ["Production databases", "Interruptible batch work", "Identity providers", "Anything with an SLA"], "answer": 1 },
+          { "id": "q2", "prompt": "Commitments (reserved capacity, savings plans) are best sized to:", "choices": ["Peak load", "Measured baseline load", "Next year's forecast", "The free tier"], "answer": 1 },
+          { "id": "q3", "prompt": "The line item the reading says is most often underestimated:", "choices": ["Egress data transfer", "Compute", "Object storage", "DNS queries"], "answer": 0 },
+          { "id": "q4", "prompt": "FOCUS is:", "choices": ["A provider discount programme", "A common billing-export specification", "A monitoring agent", "A type of virtual machine"], "answer": 1 }
+        ] },
+        { "id": "m4-assign", "type": "assignment", "title": "Cost review", "points": 30, "dueAt": "2026-09-20T23:59:00Z", "category": "assignments",
+          "brief": "Given a monthly bill of $25,000 split 60% compute, 20% storage, 15% egress and 5% other, propose three actions with the evidence you would need before taking each. 300–500 words." }
+      ]
+    },
+    {
+      "id": "m5", "title": "Infrastructure as code", "requires": "m4",
+      "items": [
+        { "id": "m5-read", "type": "reading", "title": "Why the infrastructure should be a file", "minutes": 6,
+          "body": "Infrastructure as code (IaC) describes cloud resources in files that a tool turns into API calls. Declarative tools such as Terraform and CloudFormation describe the desired end state; the tool computes the difference from the current state and applies it. The files live in version control, so every change has an author, a review and a history, and an environment can be rebuilt from scratch.\n\nThe management benefits are review and repeatability. A change to a firewall rule arrives as a pull request that a second person reads before it is applied; a plan step shows exactly what will be created, changed or destroyed. Policy-as-code scanners can reject a change that opens a storage bucket to the public before it reaches an account. Drift — manual changes made in a console — is detected when the next plan shows differences the files do not explain.\n\nThe cost is discipline. State files must be stored securely and locked during changes; secrets must never be written into the files; and the console must become read-only for the environments the code manages, or the two will diverge. Teams that adopt IaC without those rules get the tooling without the benefit." },
+        { "id": "m5-quiz", "type": "quiz", "title": "Check: infrastructure as code", "passMark": 0.75, "items": [
+          { "id": "q1", "prompt": "A declarative IaC tool works by:", "choices": ["Running scripts in order", "Computing the difference between desired and current state and applying it", "Cloning a virtual machine", "Editing the console"], "answer": 1 },
+          { "id": "q2", "prompt": "Drift is:", "choices": ["A cost overrun", "Manual changes that diverge from the code", "A network latency", "A deleted state file"], "answer": 1 },
+          { "id": "q3", "prompt": "Which must never be written into IaC files?", "choices": ["Resource names", "Secrets", "Tags", "Regions"], "answer": 1 },
+          { "id": "q4", "prompt": "The plan step exists to:", "choices": ["Estimate cost", "Show what will be created, changed or destroyed before applying", "Back up the state", "Lint syntax only"], "answer": 1 }
+        ] }
+      ]
+    }
+  ]
+}
