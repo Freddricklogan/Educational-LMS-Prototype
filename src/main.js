@@ -2,7 +2,7 @@
 import { cohortSummary, evaluateLearner, evaluationsCsv, itemAccess, THRESHOLDS, TIER_LABELS, weeklyActiveShare, weeklyActivity } from './analytics.js';
 import { loadChartLib, makeCharts } from './charts.js';
 import { courseProgress, isItemComplete, moduleState, nextItem, recordOpened, recordQuizAttempt, recordSubmission, scoreQuiz, validateCourse } from './course.js';
-import { mountExecShell } from './exec-shell.js';
+import { mountExecShell, tokens } from './exec-shell.js';
 import { computeGrade, neededForTarget, parseGradesCsv } from './gradebook.js';
 import { $, el, setText } from './ui.js';
 import { statement, TYPES, uuid } from './xapi.js';
@@ -182,7 +182,7 @@ function renderCohort() {
   charts.line($('cohortChart'), w.map((x) => x.week), [{ label: 'Learners active', data: w.map((x) => x.active) }], `Week (as of ${state.cohort.asOf.slice(0, 10)})`, 'Learners');
   const ia = itemAccess(state.cohort.learners, items.map((i) => i.id));
   charts.bars($('accessChart'), ia.map((x) => items.find((i) => i.id === x.id).title), ia.map((x) => x.learners), 'Learners who opened the item');
-  charts.donut($('tierChart'), [1, 2, 3, 4].map((t) => `Tier ${t} ${TIER_LABELS[t].split(' (')[0]}`), [1, 2, 3, 4].map((t) => s.tiers[t]), ['#3fb950', '#d29922', '#f85149', '#8b98b0']);
+  charts.donut($('tierChart'), [1, 2, 3, 4].map((t) => `Tier ${t} ${TIER_LABELS[t].split(' (')[0]}`), [1, 2, 3, 4].map((t) => s.tiers[t]), [tokens().ok, tokens().warn, tokens().danger, tokens().muted]);
   const tb = $('cohort-tbody');
   tb.replaceChildren();
   for (const e of [...evals].sort((a, b) => b.tier - a.tier || (a.gradePct ?? 0) - (b.gradePct ?? 0))) {
@@ -249,6 +249,7 @@ async function boot() {
   setRole('learner');
 
   shell = mountExecShell({
+  theme: 'ember',
     title: 'Educational LMS Prototype',
     tagline: 'A working learning-management core in the browser: a five-module course with prerequisites and a completion engine, quizzes with pass marks, assignments with due dates, a weighted gradebook with drop-lowest and late rules, xAPI 1.0.3 statements you can export, and rule-based cohort analytics that implement the shipped research framework.',
     repo: 'https://github.com/Freddricklogan/Educational-LMS-Prototype',
