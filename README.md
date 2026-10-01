@@ -58,7 +58,7 @@ flowchart LR
   subgraph TB1["Trust Boundary: the browser (GitHub Pages, static)"]
     COURSE[("data/course.json<br/>5 modules · 12 items · grade scheme")]:::data
     COHORT[("data/cohort.json<br/>40 synthetic learners")]:::data
-    subgraph PURE["Pure modules (23 tests, 98.76% stmts)"]
+    subgraph PURE["Pure modules (31 tests, 98.76% stmts)"]
       C["course.js<br/>validate · complete · unlock · scoreQuiz"]:::service
       G["gradebook.js<br/>weights · dropLowest · late · target"]:::service
       X["xapi.js<br/>statement · validate"]:::service
